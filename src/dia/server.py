@@ -16,14 +16,15 @@ if src_path not in sys.path and (Path(src_path) / "dia").exists():
 from fastmcp import FastMCP
 from fastmcp.server.lifespan import lifespan
 
-from dia.clients import firecrawl as fc
-from dia.index.db import init as init_db, save_pattern, search_patterns
+from dia.index.db import init as init_db
 from dia.tools.find_inspo import find_inspo
 from dia.tools.screenshot import screenshot_live_app
 from dia.tools.dig_platform import dig_platform
 from dia.tools.compare import compare_uis
 from dia.tools.design_dna import extract_design_dna
 from dia.tools.walk_flow import walk_flow
+from dia.tools.index_pattern import index_pattern
+from dia.tools.search_index import search_index
 from dia.prompts.inspo_hunt import inspo_hunt
 
 # ── Lifespan ──────────────────────────────────────────────────
@@ -61,55 +62,8 @@ mcp.add_tool(dig_platform)
 mcp.add_tool(compare_uis)
 mcp.add_tool(extract_design_dna)
 mcp.add_tool(walk_flow)
-
-
-@mcp.tool
-async def index_pattern(
-    url: str,
-    app_name: str,
-    flow_name: str,
-    category: str,
-    description: str,
-    tags: str = "",
-) -> str:
-    """
-    💾 Save a UI/UX pattern to the local research index.
-
-    category: onboarding | checkout | settings | dashboard | navigation
-              | forms | modals | empty-states | error-handling | pricing
-    tags: comma-separated, e.g. "dark-mode,mobile,saas,minimalist"
-    """
-    scraped = fc.scrape(url, formats=["markdown", "screenshot"])
-    md = scraped.get("markdown", "") or ""
-    ss = scraped.get("screenshot", "") or ""
-
-    pid = await save_pattern(
-        {
-            "url": url,
-            "app_name": app_name,
-            "flow_name": flow_name,
-            "category": category,
-            "description": description,
-            "tags": [t.strip() for t in tags.split(",") if t.strip()],
-            "markdown": md,
-            "screenshot_b64": ss,
-        }
-    )
-    return json.dumps({"indexed": True, "pattern_id": pid, "app_name": app_name})
-
-
-@mcp.tool
-async def search_index(
-    query: str = "",
-    category: str = "",
-    tags: str = "",
-    limit: int = 20,
-) -> str:
-    """🔎 Search the local UI/UX pattern index."""
-    results = await search_patterns(
-        query=query, category=category, tags=tags, limit=limit
-    )
-    return json.dumps(results, indent=2)
+mcp.add_tool(index_pattern)
+mcp.add_tool(search_index)
 
 
 # ── Prompt ────────────────────────────────────────────────────

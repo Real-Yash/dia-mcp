@@ -9,7 +9,7 @@ from typing import Any
 
 import aiosqlite
 
-from dia.config import DB_PATH
+from dia.config import DB_PATH, ensure_index_dir
 
 _CREATE = """
 CREATE TABLE IF NOT EXISTS patterns (
@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS patterns (
 
 
 async def init() -> None:
+    ensure_index_dir()
     async with aiosqlite.connect(DB_PATH) as db:
         await db.execute(_CREATE)
         await db.commit()
