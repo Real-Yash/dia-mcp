@@ -4,6 +4,15 @@ from __future__ import annotations
 
 import json
 
+import sys
+from pathlib import Path
+
+# Add the 'src' directory to the path if it's not already there
+# This allows the 'dia' package to be found when running the server file directly
+src_path = str(Path(__file__).parent.parent.resolve())
+if src_path not in sys.path and (Path(src_path) / "dia").exists():
+    sys.path.insert(0, src_path)
+
 from fastmcp import FastMCP
 from fastmcp.server.lifespan import lifespan
 
