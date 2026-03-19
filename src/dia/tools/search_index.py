@@ -1,4 +1,4 @@
-"""Tool — search the local UI/UX pattern index."""
+"""Tool — search the UI/UX Research Index."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ async def search_index(
     tags: str = "",
     limit: int = 20,
 ) -> str:
-    """🔎 Search the local UI/UX pattern index."""
+    """🔎 Search the UI/UX Research Index."""
     results = await search_patterns(
         query=query, category=category, tags=tags, limit=limit
     )

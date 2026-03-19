@@ -18,7 +18,7 @@ async def index_flow(
     tags: str = "",
 ) -> str:
     """
-    🔬 Use TinyFish to walk through a flow and index EVERY step into local memory.
+    🔬 Use TinyFish to walk through a flow and index EVERY step into the UI/UX Research Index.
 
     Args:
         url: Starting URL (e.g. "linear.app")

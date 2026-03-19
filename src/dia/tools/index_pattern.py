@@ -1,4 +1,4 @@
-"""Tool — save a UI/UX pattern to the local research index."""
+"""Tool — save a UI/UX pattern to the UI/UX Research Index."""
 
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ async def index_pattern(
     tags: str = "",
 ) -> str:
     """
-    💾 Save a UI/UX pattern to the local research index.
+    💾 Save a UI/UX pattern to the UI/UX Research Index.
 
     category: onboarding | checkout | settings | dashboard | navigation
               | forms | modals | empty-states | error-handling | pricing
