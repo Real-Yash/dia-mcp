@@ -22,6 +22,7 @@ from dia.tools.screenshot import screenshot_live_app
 from dia.tools.dig_platform import dig_platform
 from dia.tools.compare import compare_uis
 from dia.tools.design_dna import extract_design_dna
+from dia.tools.recommend_colors import recommend_colors
 from dia.tools.walk_flow import walk_flow
 from dia.tools.site_pattern_hunt import site_pattern_hunt
 from dia.tools.index_pattern import index_pattern
@@ -63,6 +64,7 @@ mcp.add_tool(screenshot_live_app)
 mcp.add_tool(dig_platform)
 mcp.add_tool(compare_uis)
 mcp.add_tool(extract_design_dna)
+mcp.add_tool(recommend_colors)
 mcp.add_tool(walk_flow)
 mcp.add_tool(site_pattern_hunt)
 mcp.add_tool(index_pattern)

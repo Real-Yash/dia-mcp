@@ -32,6 +32,10 @@ Use these prompts with your AI assistant (Claude, Cursor, etc.) to trigger compl
 **Goal:** Explore an entire site selectively for the best patterns.
 > "Perform a `site_pattern_hunt` on **https://reark.com**. Smartly find their most unique UI patterns, especially in their documentation and product overview pages. I want to see how they handle complex information hierarchy."
 
+### 7. Expert Color Palette Recommendation
+**Goal:** Get curated color palettes with design rationale for a specific niche.
+> "I'm building a **meditation and wellness app** that needs to feel **calm, grounding, and accessible**. Use `recommend_colors` to find 5 trending palettes. I want to see the HEX codes and the expert rationale for why these colors work for mental health applications."
+
 ---
 
 ## 🛠️ Tool-Specific Use Cases
@@ -43,6 +47,7 @@ Use these prompts with your AI assistant (Claude, Cursor, etc.) to trigger compl
 | `walk_flow` | Studying user journey patterns | Use for complex multi-step processes like "KYC verification" or "checkout". |
 | `index_flow` | Long-term research memory | Use this to save an entire multi-step flow so you don't have to re-run the agent later. |
 | `extract_design_dna` | Building a new token system | Use this to see the proportional relationships (e.g. heading-to-body ratio) of top sites. |
+| `recommend_colors` | Visual identity & branding | Combine with `extract_design_dna` to compare your ideas with competitors. |
 
 ---
 
