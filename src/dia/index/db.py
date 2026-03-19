@@ -14,6 +14,8 @@ from dia.config import DB_PATH, ensure_index_dir
 _CREATE = """
 CREATE TABLE IF NOT EXISTS patterns (
     id              TEXT PRIMARY KEY,
+    flow_id         TEXT,
+    step_number     INTEGER DEFAULT 0,
     url             TEXT NOT NULL,
     category        TEXT,
     app_name        TEXT,
@@ -33,23 +35,37 @@ async def init() -> None:
     ensure_index_dir()
     async with aiosqlite.connect(DB_PATH) as db:
         await db.execute(_CREATE)
+        # Check if columns exist (for migration)
+        cursor = await db.execute("PRAGMA table_info(patterns)")
+        columns = [row[1] for row in await cursor.fetchall()]
+        if "flow_id" not in columns:
+            await db.execute("ALTER TABLE patterns ADD COLUMN flow_id TEXT")
+        if "step_number" not in columns:
+            await db.execute("ALTER TABLE patterns ADD COLUMN step_number INTEGER DEFAULT 0")
         await db.commit()
 
 
 async def save_pattern(data: dict[str, Any]) -> str:
-    pid = hashlib.md5(
-        f"{data.get('url', '')}:{data.get('flow_name', '')}".encode()
-    ).hexdigest()
+    # Unique ID for each entry (URL + Flow + Step)
+    pid_base = f"{data.get('url', '')}:{data.get('flow_name', '')}:{data.get('step_number', 0)}"
+    pid = hashlib.md5(pid_base.encode()).hexdigest()
+
+    # Flow ID groups steps together (URL + Flow)
+    fid_base = f"{data.get('url', '')}:{data.get('flow_name', '')}"
+    fid = hashlib.md5(fid_base.encode()).hexdigest()
+
     async with aiosqlite.connect(DB_PATH) as db:
         await db.execute(
             """
             INSERT OR REPLACE INTO patterns
-                (id, url, category, app_name, flow_name, description,
+                (id, flow_id, step_number, url, category, app_name, flow_name, description,
                  screenshot_b64, markdown, branding, metadata, tags, indexed_at)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             """,
             (
                 pid,
+                data.get("flow_id", fid),
+                data.get("step_number", 0),
                 data.get("url", ""),
                 data.get("category", ""),
                 data.get("app_name", ""),

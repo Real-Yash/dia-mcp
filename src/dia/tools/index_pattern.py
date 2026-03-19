@@ -24,9 +24,10 @@ async def index_pattern(
               | forms | modals | empty-states | error-handling | pricing
     tags: comma-separated, e.g. "dark-mode,mobile,saas,minimalist"
     """
-    scraped = await asyncio.to_thread(fc.scrape, url, formats=["markdown", "screenshot"])
+    scraped = await asyncio.to_thread(fc.scrape, url, formats=["markdown", "screenshot", "branding"])
     md = scraped.get("markdown", "") or ""
     ss = scraped.get("screenshot", "") or ""
+    branding = scraped.get("branding", {})
 
     pid = await save_pattern(
         {
@@ -38,6 +39,7 @@ async def index_pattern(
             "tags": [t.strip() for t in tags.split(",") if t.strip()],
             "markdown": md,
             "screenshot_b64": ss,
+            "branding": branding,
         }
     )
     return json.dumps({"indexed": True, "pattern_id": pid, "app_name": app_name})

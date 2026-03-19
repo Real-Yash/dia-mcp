@@ -24,6 +24,7 @@ from dia.tools.compare import compare_uis
 from dia.tools.design_dna import extract_design_dna
 from dia.tools.walk_flow import walk_flow
 from dia.tools.index_pattern import index_pattern
+from dia.tools.index_flow import index_flow
 from dia.tools.search_index import search_index
 from dia.prompts.inspo_hunt import inspo_hunt
 
@@ -63,6 +64,7 @@ mcp.add_tool(compare_uis)
 mcp.add_tool(extract_design_dna)
 mcp.add_tool(walk_flow)
 mcp.add_tool(index_pattern)
+mcp.add_tool(index_flow)
 mcp.add_tool(search_index)
 
 
