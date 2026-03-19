@@ -92,17 +92,24 @@ async def find_inspo(
     fc_results: list[dict] = []
     tf_results: list[dict] = []
 
+    async def _run_fc_task(task):
+        try:
+            # Firecrawl SDK is synchronous, so we run it in a thread
+            res = await asyncio.to_thread(
+                fc.search,
+                task["query"],
+                limit=task["limit"],
+                formats=["markdown", "screenshot", "links"],
+            )
+            return {"source": task["source"], "results": res}
+        except Exception as e:
+            return {"source": task["source"], "error": str(e)}
+
     async def _fc_search():
-        for task in fc_tasks:
-            try:
-                res = fc.search(
-                    task["query"],
-                    limit=task["limit"],
-                    formats=["markdown", "screenshot", "links"],
-                )
-                fc_results.append({"source": task["source"], "results": res})
-            except Exception as e:
-                fc_results.append({"source": task["source"], "error": str(e)})
+        nonlocal fc_results
+        tasks = [_run_fc_task(t) for t in fc_tasks]
+        if tasks:
+            fc_results = await asyncio.gather(*tasks)
 
     async def _tf_search():
         nonlocal tf_results
@@ -126,7 +133,7 @@ async def find_inspo(
     screenshots: dict[str, bool] = {}
     if screenshot_urls:
         try:
-            batch = fc.batch_scrape(screenshot_urls[:limit])
+            batch = await asyncio.to_thread(fc.batch_scrape, screenshot_urls[:limit])
             items = batch.get("data", []) if isinstance(batch, dict) else batch
             for doc in items:
                 d = doc if isinstance(doc, dict) else doc.__dict__

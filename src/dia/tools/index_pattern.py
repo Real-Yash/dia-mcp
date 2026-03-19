@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 
+import asyncio
 from dia.clients import firecrawl as fc
 from dia.index.db import save_pattern
 
@@ -23,7 +24,7 @@ async def index_pattern(
               | forms | modals | empty-states | error-handling | pricing
     tags: comma-separated, e.g. "dark-mode,mobile,saas,minimalist"
     """
-    scraped = fc.scrape(url, formats=["markdown", "screenshot"])
+    scraped = await asyncio.to_thread(fc.scrape, url, formats=["markdown", "screenshot"])
     md = scraped.get("markdown", "") or ""
     ss = scraped.get("screenshot", "") or ""
 
