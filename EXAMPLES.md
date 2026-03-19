@@ -36,6 +36,10 @@ Use these prompts with your AI assistant (Claude, Cursor, etc.) to trigger compl
 **Goal:** Get curated color palettes with design rationale for a specific niche.
 > "I'm building a **meditation and wellness app** that needs to feel **calm, grounding, and accessible**. Use `recommend_colors` to find 5 trending palettes. I want to see the HEX codes and the expert rationale for why these colors work for mental health applications."
 
+### 8. The UX Oracle (Deep Autonomous Research)
+**Goal:** Trigger a multi-stage research mission to solve a complex design problem.
+> "I need to design a **highly complex data filtering system** for an **enterprise analytics platform**. Use `ux_oracle` with **depth='deep'** to research industry standards, extract the Design DNA of the best examples, and synthesize a report on information density and spatial logic."
+
 ---
 
 ## 🛠️ Tool-Specific Use Cases
@@ -48,6 +52,7 @@ Use these prompts with your AI assistant (Claude, Cursor, etc.) to trigger compl
 | `index_flow` | Long-term research memory | Use this to save an entire multi-step flow so you don't have to re-run the agent later. |
 | `extract_design_dna` | Building a new token system | Use this to see the proportional relationships (e.g. heading-to-body ratio) of top sites. |
 | `recommend_colors` | Visual identity & branding | Combine with `extract_design_dna` to compare your ideas with competitors. |
+| `ux_oracle` | End-to-end design research | The 'Master' tool. Use when you have a high-level problem and need a full report. |
 
 ---
 
