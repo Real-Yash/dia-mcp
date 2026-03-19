@@ -172,6 +172,35 @@ def batch_scrape(
     return {"data": []}
 
 
+def crawl(
+    url: str,
+    *,
+    limit: int = 10,
+    prompt: str | None = None,
+    formats: list[str] | None = None,
+) -> Any:
+    """
+    Crawl a website and extract data from multiple pages.
+
+    Args:
+        url: Starting URL.
+        limit: Max pages to crawl.
+        prompt: Optional prompt to guide the crawl/extraction.
+        formats: Formats to extract (e.g. ["markdown", "screenshot"]).
+    """
+    kwargs: dict[str, Any] = {"limit": limit}
+    if prompt:
+        kwargs["scrape_options"] = {"prompt": prompt}
+    if formats:
+        if "scrape_options" not in kwargs:
+            kwargs["scrape_options"] = {}
+        kwargs["scrape_options"]["formats"] = formats
+
+    # The SDK crawl() method in v2 handles the polling automatically
+    # and returns the completed crawl data.
+    return _client().crawl(url, **kwargs)
+
+
 def extract_branding(url: str) -> Any:
     doc = scrape(url, formats=["branding", "screenshot"])
     return doc.get("branding")
