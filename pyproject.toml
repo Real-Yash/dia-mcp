@@ -1,0 +1,27 @@
+[project]
+name = "dia-mcp"
+version = "0.1.0"
+description = "UI/UX Inspo MCP Server — find the best UI/UX inspiration as images, fast"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "aiosqlite>=0.22.1",
+    "fastmcp>=3.1.1",
+    "firecrawl-py>=4.19.0",
+    "httpx>=0.28.1",
+    "pydantic>=2.12.5",
+    "tinyfish>=0.2.3",
+]
+
+[tool.uv]
+package = true
+
+[project.scripts]
+dia-mcp = "dia.server:main"
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.408",
+    "pytest>=9.0.2",
+    "ruff>=0.15.6",
+]
