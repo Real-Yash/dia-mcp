@@ -51,7 +51,10 @@ async def run_agent(
                     continue
                 if event.get("type") == "COMPLETE":
                     result = event
-            return result or {"error": "No COMPLETE event received"}
+                    break
+                elif event.get("type") == "ERROR":
+                    return {"error": event.get("message", "Unknown error")}
+        return result or {"error": "No COMPLETE event received"}
 
 
 async def run_parallel(tasks: list[dict[str, Any]]) -> list[dict[str, Any]]:

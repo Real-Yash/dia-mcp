@@ -18,6 +18,73 @@ def _client() -> Firecrawl:
     return _fc
 
 
+# ── Helpers ──────────────────────────────────────────────────
+
+
+def _doc_to_dict(doc: Any) -> dict[str, Any]:
+    """Convert a Firecrawl Document (Pydantic model or dict) to a plain dict."""
+    if isinstance(doc, dict):
+        return doc
+    d: dict[str, Any] = {}
+    d["markdown"] = getattr(doc, "markdown", None)
+    d["screenshot"] = getattr(doc, "screenshot", None)
+    d["links"] = getattr(doc, "links", None)
+    d["branding"] = getattr(doc, "branding", None)
+    d["url"] = getattr(doc, "url", None)
+    # Normalise metadata to a plain dict
+    meta = getattr(doc, "metadata", None)
+    if meta is None:
+        d["metadata"] = {}
+    elif isinstance(meta, dict):
+        d["metadata"] = meta
+    else:
+        # DocumentMetadata Pydantic model — use source_url (snake_case in v2)
+        d["metadata"] = {
+            "sourceURL": getattr(meta, "source_url", None)
+            or getattr(meta, "url", None)
+            or "",
+            "title": getattr(meta, "title", None) or "",
+            "description": getattr(meta, "description", None) or "",
+        }
+    return d
+
+
+def _search_result_to_dict(item: Any) -> dict[str, Any]:
+    """Convert a SearchResultWeb / SearchResultNews / Document to a plain dict."""
+    if isinstance(item, dict):
+        url = item.get("url", "")
+        return {
+            "url": url,
+            "metadata": {
+                "sourceURL": url,
+                "title": item.get("title", ""),
+                "description": item.get("description", ""),
+            },
+            "markdown": item.get("markdown", ""),
+            "screenshot": item.get("screenshot"),
+        }
+    # Pydantic model (SearchResultWeb, SearchResultNews, Document etc.)
+    url = getattr(item, "url", None) or ""
+    markdown = getattr(item, "markdown", None) or ""
+    screenshot = getattr(item, "screenshot", None)
+    meta = getattr(item, "metadata", None)
+    if meta is None:
+        source_url = url
+        title = getattr(item, "title", "") or ""
+    elif isinstance(meta, dict):
+        source_url = meta.get("sourceURL") or meta.get("source_url") or url
+        title = meta.get("title", "")
+    else:
+        source_url = getattr(meta, "source_url", None) or url
+        title = getattr(meta, "title", None) or getattr(item, "title", "") or ""
+    return {
+        "url": source_url or url,
+        "metadata": {"sourceURL": source_url or url, "title": title},
+        "markdown": markdown,
+        "screenshot": screenshot,
+    }
+
+
 # ── Primitives ───────────────────────────────────────────────
 
 
@@ -28,7 +95,15 @@ def search(
     if formats:
         opts = {"formats": formats}
     result = _client().search(query, limit=limit, scrape_options=opts)  # type: ignore[arg-type]
-    return result or []  # type: ignore[return-value]
+    if result is None:
+        return []
+    # SDK v2 returns SearchData(web=List[SearchResultWeb|Document], ...)
+    if hasattr(result, "web") and result.web:
+        return [_search_result_to_dict(item) for item in result.web]
+    # Fallback: if it's already a list
+    if isinstance(result, list):
+        return [_search_result_to_dict(item) for item in result]
+    return []
 
 
 def scrape(
@@ -37,14 +112,15 @@ def scrape(
     formats: list[str] | None = None,
     actions: list[dict[str, Any]] | None = None,
     mobile: bool = False,
-) -> Any:
+) -> dict[str, Any]:
     formats = formats or ["markdown", "screenshot"]
     kwargs: dict[str, Any] = {"formats": formats}
     if actions:
         kwargs["actions"] = actions
     if mobile:
         kwargs["mobile"] = True
-    return _client().scrape(url, **kwargs)
+    result = _client().scrape(url, **kwargs)
+    return _doc_to_dict(result)
 
 
 def map_urls(url: str) -> list[str]:
@@ -59,7 +135,7 @@ def batch_scrape(
     *,
     formats: list[str] | None = None,
     mobile: bool = False,
-) -> Any:
+) -> dict[str, Any]:
     formats = formats or ["screenshot", "markdown"]
     kwargs: dict[str, Any] = {
         "formats": formats,
@@ -68,9 +144,16 @@ def batch_scrape(
     }
     if mobile:
         kwargs["mobile"] = True
-    return _client().batch_scrape(urls, **kwargs)
+    result = _client().batch_scrape(urls, **kwargs)
+    # SDK v2 returns a Pydantic model — normalise to {"data": [...]}
+    if isinstance(result, dict):
+        raw_data = result.get("data", []) or []
+        return {"data": [_doc_to_dict(d) for d in raw_data]}
+    if hasattr(result, "data") and result.data is not None:
+        return {"data": [_doc_to_dict(d) for d in result.data]}
+    return {"data": []}
 
 
 def extract_branding(url: str) -> Any:
-    doc = _client().scrape(url, formats=["branding", "screenshot"])
-    return doc.branding if hasattr(doc, "branding") else doc
+    doc = scrape(url, formats=["branding", "screenshot"])
+    return doc.get("branding")

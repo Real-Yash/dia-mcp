@@ -71,12 +71,8 @@ async def index_pattern(
     tags: comma-separated, e.g. "dark-mode,mobile,saas,minimalist"
     """
     scraped = fc.scrape(url, formats=["markdown", "screenshot"])
-    md = getattr(scraped, "markdown", "") or (
-        scraped.get("markdown", "") if isinstance(scraped, dict) else ""
-    )
-    ss = getattr(scraped, "screenshot", "") or (
-        scraped.get("screenshot", "") if isinstance(scraped, dict) else ""
-    )
+    md = scraped.get("markdown", "") or ""
+    ss = scraped.get("screenshot", "") or ""
 
     pid = await save_pattern(
         {
@@ -109,7 +105,7 @@ async def search_index(
 
 # ── Prompt ────────────────────────────────────────────────────
 
-mcp.add_prompt(inspo_hunt)
+mcp.prompt()(inspo_hunt)
 
 
 # ── Entrypoint ────────────────────────────────────────────────

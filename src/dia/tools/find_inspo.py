@@ -92,25 +92,37 @@ async def find_inspo(
     fc_results: list[dict] = []
     tf_results: list[dict] = []
 
+    print("starting fc search...")
     async def _fc_search():
         for task in fc_tasks:
             try:
+                print(f"fc searching {task['source']}")
                 res = fc.search(
                     task["query"],
                     limit=task["limit"],
                     formats=["markdown", "screenshot", "links"],
                 )
+                print(f"fc search done for {task['source']}")
                 fc_results.append({"source": task["source"], "results": res})
             except Exception as e:
+                import traceback
+                traceback.print_exc()
+                print(f"FC ERROR for {task['source']}: {e}")
                 fc_results.append({"source": task["source"], "error": str(e)})
-
+    print("starting tf search...")
     async def _tf_search():
         nonlocal tf_results
+        print("tf run_parallel starting...")
         raw = await tf.run_parallel(tf_tasks)
+        print(f"tf run_parallel done, {len(raw)} results")
         for i, r in enumerate(raw):
+            if isinstance(r, dict) and 'error' in r:
+                print(f"TF ERROR for {tf_tasks[i]['url']}: {r['error']}")
             tf_results.append({"source": tf_tasks[i]["url"], "data": r})
 
+    print("awaiting both...")
     await asyncio.gather(_fc_search(), _tf_search())
+    print("both awaited successfully.")
 
     if ctx:
         await ctx.report_progress(1, 3)

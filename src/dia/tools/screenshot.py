@@ -41,13 +41,8 @@ async def screenshot_live_app(
 
     result = fc.scrape(url, formats=[fmt, "markdown"], actions=actions, mobile=mobile)
 
-    screenshot = getattr(result, "screenshot", None) or (
-        result.get("screenshot") if isinstance(result, dict) else None
-    )
-    title = ""
-    meta = getattr(result, "metadata", None) or (
-        result.get("metadata", {}) if isinstance(result, dict) else {}
-    )
+    screenshot = result.get("screenshot")
+    meta = result.get("metadata", {}) or {}
     title = meta.get("title", "") if isinstance(meta, dict) else ""
 
     return json.dumps(
