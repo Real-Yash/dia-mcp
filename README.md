@@ -11,14 +11,16 @@ Built with [FastMCP](https://github.com/jlowin/fastmcp), `dia-mcp` connects LLM 
 ## Capabilities
 
 The server provides several tools that AI agents can use:
-- **`find_inspo`**: 🎨 Find UI/UX inspiration images based on queries.
-- **`screenshot_live_app`**: 📸 Take a screenshot of a live application.
-- **`dig_platform`**: ⛏️ Dig around design platforms (like Mobbin, Refero, Godly).
-- **`compare_uis`**: ⚖️ Compare multiple UIs and their patterns.
-- **`extract_design_dna`**: 🧬 Extract the design DNA, principles, and patterns from a UI.
-- **`walk_flow`**: 🚶 Walk through a UX flow.
-- **`index_pattern`**: 💾 Save a UI/UX pattern to the local research index.
-- **`search_index`**: 🔎 Search the local UI/UX pattern index.
+- **`find_inspo`**: 🎨 Find the best UI/UX inspiration images for any design need.
+- **`screenshot_live_app`**: 📸 Capture high-quality screenshots of any live application.
+- **`dig_platform`**: 🕵️ Deep-dive into design platforms like Mobbin, Refero, or Godly using an AI agent.
+- **`compare_uis`**: ⚖️ Screenshot and compare multiple live products side-by-side.
+- **`extract_design_dna`**: 🧬 Extract design tokens, color palettes, and typography from any site.
+- **`walk_flow`**: 🚶 Walk through a real multi-step UI flow and document every step.
+- **`site_pattern_hunt`**: 🏹 Smartly hunt for UI/UX patterns across a whole website.
+- **`index_pattern`**: 💾 Save a UI/UX pattern to the persistent Research Index.
+- **`index_flow`**: 🔬 Walk through and index an entire multi-page flow.
+- **`search_index`**: 🔎 Search your accumulated UI/UX Research Index.
 
 It also includes prompts like `inspo_hunt` to kick off visual research sessions.
 
