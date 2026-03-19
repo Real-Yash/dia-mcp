@@ -12,10 +12,13 @@ from dia.clients import tinyfish as tf
 from dia.sources import SOURCES, pick_sources
 
 DESIGN_GUIDANCE = (
-    "REMEMBER: These references are for UNDERSTANDING design patterns "
-    "and principles. Analyze WHY each design works — the visual hierarchy, "
-    "spacing, color relationships, interaction patterns — then create "
-    "something original that's informed by these insights."
+    "You are a Senior Design Systems Architect. "
+    "When reviewing these references, focus on the 'Design DNA': "
+    "1. Information Hierarchy: How is the most important action emphasized? "
+    "2. Proportional Relationships: What is the ratio between heading and body text? "
+    "3. Spatial Logic: How is negative space used to group related elements? "
+    "4. Component Patterns: Are there reusable UI patterns you can abstract? "
+    "Do not just copy the visuals; synthesize the underlying PRINCIPLES."
 )
 
 
@@ -78,12 +81,13 @@ async def find_inspo(
                 {
                     "url": search_url,
                     "goal": (
-                        f"Search for '{query}' UI/UX designs. "
-                        f"Find the top {per_source} most relevant results. "
-                        f"For each, extract as JSON: "
-                        f'{{"results": [{{"title": str, "image_url": str, '
-                        f'"app_name": str, "screen_type": str, '
-                        f'"page_url": str, "description": str}}]}}'
+                        f"You are a Senior Visual Designer. Search for '{query}' UI/UX designs. "
+                        f"Curate the top {per_source} most relevant and visually interesting results. "
+                        f"Extract details as high-quality JSON: "
+                        f'{{"results": [{{"title": "descriptive name", "image_url": "direct URL", '
+                        f'"app_name": "source app", "screen_type": "UI context", '
+                        f'"page_url": "source URL", '
+                        f'"design_rationale": "expert analysis of the layout and styling"}}]}}'
                     ),
                     "stealth": key in ("mobbin", "refero"),
                 }
