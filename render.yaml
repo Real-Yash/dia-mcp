@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: dia-mcp
+    env: python
+    buildCommand: "curl -LsSf https://astral.sh/uv/install.sh | sh && $HOME/.local/bin/uv sync"
+    startCommand: "$HOME/.local/bin/uv run fastmcp run src/dia/server.py -t sse --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.1
