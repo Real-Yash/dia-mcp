@@ -51,14 +51,41 @@ This project relies on `uv` for dependency management. Requires Python 3.13+.
 
 ## Running the Server
 
-Start the FastMCP server using `uv`:
+The server supports two transport modes:
+
+### Local Development (stdio)
+
+For local development and testing, run in stdio mode:
+
 ```bash
 uv run dia-mcp
 ```
 
-### Using with Claude Desktop (or other MCP clients)
+### Remote Deployment (SSE)
 
-Add the following configuration to your Claude Desktop MCP settings (`claude_desktop_config.json`):
+For remote deployment, run in SSE mode:
+
+```bash
+uv run dia-mcp --remote
+```
+
+Or with custom host/port:
+
+```bash
+uv run dia-mcp --remote --host 127.0.0.1 --port 8080
+```
+
+You can also use environment variables:
+- `MCP_HOST` — default: `0.0.0.0`
+- `MCP_PORT` — default: `8000`
+
+---
+
+## Client Setup
+
+### Claude Desktop
+
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ```json
 {
@@ -79,7 +106,76 @@ Add the following configuration to your Claude Desktop MCP settings (`claude_des
   }
 }
 ```
-*(Make sure to match the directory path and replace the API keys with your actual keys.)*
+
+### Cursor
+
+Add to Cursor settings (`~/.cursor/settings.json` or via Settings → MCP):
+
+```json
+{
+  "mcpServers": {
+    "dia-mcp": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/absolute/path/to/dia-mcp",
+        "run",
+        "dia-mcp"
+      ],
+      "env": {
+        "FIRECRAWL_API_KEY": "fc-...",
+        "TINYFISH_API_KEY": "tf-..."
+      }
+    }
+  }
+}
+```
+
+### VS Code (with Copilot Free/Pro)
+
+Add to VS Code settings (`settings.json`):
+
+```json
+{
+  "mcpServers": {
+    "dia-mcp": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/absolute/path/to/dia-mcp",
+        "run",
+        "dia-mcp"
+      ],
+      "env": {
+        "FIRECRAWL_API_KEY": "fc-...",
+        "TINYFISH_API_KEY": "tf-..."
+      }
+    }
+  }
+}
+```
+
+### Other MCP Clients (Windsurf, etc.)
+
+The pattern is the same — point the `command` to `uv` with `--directory` set to your clone path, and pass API keys via `env`.
+
+*(Replace `/absolute/path/to/dia-mcp` with your actual clone path and API keys with real values.)*
+
+---
+
+### Running Remotely
+
+If running in remote (SSE) mode, clients connect via HTTP instead:
+
+```json
+{
+  "mcpServers": {
+    "dia-mcp": {
+      "url": "http://localhost:8000/mcp"
+    }
+  }
+}
+```
 
 ## Development Commands
 

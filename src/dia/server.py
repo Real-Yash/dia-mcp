@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import json
-
+import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -83,7 +83,29 @@ mcp.prompt()(inspo_hunt)
 
 
 def main():
-    mcp.run()
+    parser = argparse.ArgumentParser(description="UX Inspo Engine MCP Server")
+    parser.add_argument(
+        "--remote",
+        action="store_true",
+        help="Run in remote SSE mode instead of stdio",
+    )
+    parser.add_argument(
+        "--host",
+        default=os.getenv("MCP_HOST", "0.0.0.0"),
+        help="Host for remote mode (default: 0.0.0.0)",
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=int(os.getenv("MCP_PORT", "8000")),
+        help="Port for remote mode (default: 8000)",
+    )
+    args = parser.parse_args()
+
+    if args.remote:
+        mcp.run(transport="sse", host=args.host, port=args.port)
+    else:
+        mcp.run(transport="stdio")
 
 
 if __name__ == "__main__":
