@@ -47,6 +47,7 @@ This project relies on `uv` for dependency management. Requires Python 3.13+.
    Add your API keys to the `.env` file:
    - `FIRECRAWL_API_KEY`: Get your key from [Firecrawl](https://firecrawl.dev). Used for web scraping and screenshots.
    - `TINYFISH_API_KEY`: Get your key from [TinyFish](https://tinyfish.ai). Used for browser agents on gated platforms.
+   - `MOBBIN_EMAIL` / `MOBBIN_PASSWORD`: Your Mobbin login credentials for TinyFish automated logins.
    - `UX_INSPO_INDEX_DIR`: (Optional) Path to your local pattern index (defaults to `./uxindex`).
 
 ## Running the Server
@@ -61,18 +62,19 @@ For local development and testing, run in stdio mode:
 uv run dia-mcp
 ```
 
-### Remote Deployment (SSE)
+### Remote Deployment (Render / Cloud)
 
-For remote deployment, run in SSE mode:
+This project includes a `render.yaml` for 1-click deployments to Render as a centralized SaaS web service. 
+
+When hosted remotely, **the server uses the API keys configured in the server's environment**. Users connecting to this server do NOT need to provide their own keys!
+
+1. **Deploy to Render:** Connect your GitHub to Render and deploy via the Blueprint.
+2. **Add Environment Variables:** In the Render Dashboard, configure `FIRECRAWL_API_KEY`, `TINYFISH_API_KEY`, `MOBBIN_EMAIL`, and `MOBBIN_PASSWORD`.
+
+To test the SSE mode locally:
 
 ```bash
-uv run dia-mcp --remote
-```
-
-Or with custom host/port:
-
-```bash
-uv run dia-mcp --remote --host 127.0.0.1 --port 8080
+uv run fastmcp run src/dia/server.py -t sse --host 0.0.0.0 --port 8000
 ```
 
 You can also use environment variables:
@@ -83,33 +85,11 @@ You can also use environment variables:
 
 ## Client Setup
 
-### Claude Desktop
+### Local Clients (Using your own locally-stored keys)
 
-Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+If running the Python package locally instead of a cloud deployment, add your `.env` variables directly into the client configs:
 
-```json
-{
-  "mcpServers": {
-    "dia-mcp": {
-      "command": "uv",
-      "args": [
-        "--directory",
-        "/absolute/path/to/dia-mcp",
-        "run",
-        "dia-mcp"
-      ],
-      "env": {
-        "FIRECRAWL_API_KEY": "fc-...",
-        "TINYFISH_API_KEY": "tf-..."
-      }
-    }
-  }
-}
-```
-
-### Cursor
-
-Add to Cursor settings (`~/.cursor/settings.json` or via Settings → MCP):
+### Cursor / Claude Desktop
 
 ```json
 {
@@ -124,42 +104,26 @@ Add to Cursor settings (`~/.cursor/settings.json` or via Settings → MCP):
       ],
       "env": {
         "FIRECRAWL_API_KEY": "fc-...",
-        "TINYFISH_API_KEY": "tf-..."
+        "TINYFISH_API_KEY": "tf-...",
+        "MOBBIN_EMAIL": "...",
+        "MOBBIN_PASSWORD": "..."
       }
     }
   }
 }
 ```
 
-### VS Code (with Copilot Free/Pro)
+---
 
-Add to VS Code settings (`settings.json`):
+### Remote Clients (Connecting to Cloud Deployment)
 
-```json
-{
-  "mcpServers": {
-    "dia-mcp": {
-      "command": "uv",
-      "args": [
-        "--directory",
-        "/absolute/path/to/dia-mcp",
-        "run",
-        "dia-mcp"
-      ],
-      "env": {
-        "FIRECRAWL_API_KEY": "fc-...",
-        "TINYFISH_API_KEY": "tf-..."
-      }
-    }
-  }
-}
-```
+Clients (like Cursor) connecting to your deployed Render app (Centralized SaaS mode) just need an **SSE connection**:
 
-### Other MCP Clients (Windsurf, etc.)
+1. Go to your MCP Client settings
+2. Add a new Server (Type: **SSE**)
+3. Set the URL: `https://your-render-app.onrender.com/sse`
 
-The pattern is the same — point the `command` to `uv` with `--directory` set to your clone path, and pass API keys via `env`.
-
-*(Replace `/absolute/path/to/dia-mcp` with your actual clone path and API keys with real values.)*
+No local keys or CLI configuration is needed!
 
 ---
 

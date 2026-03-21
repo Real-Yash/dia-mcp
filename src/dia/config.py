@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-import contextvars
 
 # NOTE: For remote servers, environment variables should be set by the platform
 # (e.g. Docker, Heroku, Vercel, etc.). The local .env file should only be
@@ -9,11 +8,9 @@ import contextvars
 TINYFISH_API_KEY: str = os.environ.get("TINYFISH_API_KEY", "")
 FIRECRAWL_API_KEY: str = os.environ.get("FIRECRAWL_API_KEY", "")
 
-# ContextVars to allow users to bring their own keys per-request (overriding env vars)
-TINYFISH_API_KEY_CTX: contextvars.ContextVar[str] = contextvars.ContextVar("tf_api_key_ctx", default="")
-FIRECRAWL_API_KEY_CTX: contextvars.ContextVar[str] = contextvars.ContextVar("fc_api_key_ctx", default="")
-MOBBIN_EMAIL_CTX: contextvars.ContextVar[str] = contextvars.ContextVar("mobbin_email_ctx", default="")
-MOBBIN_PASSWORD_CTX: contextvars.ContextVar[str] = contextvars.ContextVar("mobbin_password_ctx", default="")
+# Server-side stored credentials to run automated logins
+MOBBIN_EMAIL: str = os.environ.get("MOBBIN_EMAIL", "")
+MOBBIN_PASSWORD: str = os.environ.get("MOBBIN_PASSWORD", "")
 
 # Allow overriding the index directory via environment variable.
 # For remote servers with ephemeral filesystems, this should point to a
