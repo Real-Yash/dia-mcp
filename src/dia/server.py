@@ -16,6 +16,9 @@ if src_path not in sys.path and (Path(src_path) / "dia").exists():
 from fastmcp import FastMCP
 from fastmcp.server.lifespan import lifespan
 
+from starlette.requests import Request
+from starlette.responses import JSONResponse
+
 from dia.index.db import init as init_db
 from dia.tools.find_inspo import find_inspo
 from dia.tools.screenshot import screenshot_live_app
@@ -77,6 +80,13 @@ mcp.add_tool(search_index)
 # ── Prompt ────────────────────────────────────────────────────
 
 mcp.prompt()(inspo_hunt)
+
+
+# ── Health Check ──────────────────────────────────────────────
+
+@mcp.custom_route("/health", methods=["GET"])
+async def health_check(request: Request):
+    return JSONResponse({"status": "ok", "message": "UX Inspo Engine is running"})
 
 
 # ── Entrypoint ────────────────────────────────────────────────
